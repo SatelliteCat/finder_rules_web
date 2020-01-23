@@ -127,3 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# IDE
+.vscode/
+.idea/
+
+# npm
+node_modules/
+
+# Dir with temp proj
+projects/
