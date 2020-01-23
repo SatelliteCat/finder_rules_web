@@ -1,4 +1,0 @@
-group1
-android
-2019-10-21 21:39:29.462395
-rule1 NOT passed

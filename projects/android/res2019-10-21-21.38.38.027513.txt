@@ -1,4 +1,0 @@
-gr1
-android
-2019-10-21 21:38:38.028514
-Error get rules
