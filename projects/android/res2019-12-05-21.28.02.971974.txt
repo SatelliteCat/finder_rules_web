@@ -1,0 +1,7 @@
+1
+android
+2019-12-05 21:28:02.972558
+rule1 NOT passed
+rule2 NOT passed
+rule2 NOT passed
+rule3 NOT passed

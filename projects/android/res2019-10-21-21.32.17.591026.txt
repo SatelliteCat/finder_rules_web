@@ -1,0 +1,4 @@
+group1
+android
+2019-10-21 21:32:17.591026
+rule1 NOT passed
