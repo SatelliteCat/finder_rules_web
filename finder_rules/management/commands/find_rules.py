@@ -45,8 +45,8 @@ class Command(BaseCommand):
 
         dir_list = [x[0] for x in os.walk(cur_dir)]
         with open(f'{cur_dir}/res{datetime.now().strftime("%Y-%m-%d-%H.%M.%S.%f")}.txt', 'a+') as res_file:
-            text = f'{args[0]}\n'
-            text += f'{args[1]}\n'
+            text = f'{Group.objects.get(id=args[0])} '
+            text += f'{args[1]} '
             text += f'{str(datetime.now())}\n'
 
             global is_rule
@@ -64,10 +64,10 @@ class Command(BaseCommand):
                             if '.' in file_name:
                                 file_extension = file_name.split('.')[-1]
 
-                                if file_extension in rule.file_types:
+                                if file_extension in rule.file_types and file_extension:
                                     with open(f'{dir_path}/{file_name}', 'r') as file:
                                         try:
-                                            if rule.search_text in file.read():
+                                            if rule.search_text in file.read() and rule.search_text:
                                                 is_rule = True
                                                 break
                                         except Exception:
@@ -78,9 +78,11 @@ class Command(BaseCommand):
                     if is_rule:
                         text += f'{rule} passed\n'
                     else:
-                        text += f'{rule} NOT passed\n'
+                        text += f'{rule} NOT passed'
                         if rule.recommendation:
-                            text += f'Recommendation: {rule.recommendation}\n'
+                            text += f' Recommendation: {rule.recommendation}\n'
+                        else:
+                            text += '\n'
 
             except Exception:
                 text += 'Error get rules\n'
