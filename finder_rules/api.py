@@ -9,15 +9,25 @@ from finder_rules.serializers import GroupSerializer, RuleSerializer, TestSerial
 
 
 class RuleViewSet(viewsets.ModelViewSet):
-    queryset = Rule.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = RuleSerializer
+
+    def get_queryset(self):
+        return self.request.user.rule.all()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = GroupSerializer
+
+    def get_queryset(self):
+        return self.request.user.group.all()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class TestViewSet(viewsets.ModelViewSet):
@@ -25,7 +35,7 @@ class TestViewSet(viewsets.ModelViewSet):
     serializer_class = TestSerializer
 
     def get_queryset(self):
-        return self.request.user.tests.all()
+        return self.request.user.test.all()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

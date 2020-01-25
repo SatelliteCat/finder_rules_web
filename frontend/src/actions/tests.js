@@ -1,10 +1,11 @@
 import axios from 'axios';
-import {createMessage, returnErrors} from "./messages";
-import {ADD_RULE, DELETE_RULE, GET_RULES} from "./types";
+import { createMessage, returnErrors } from "./messages";
+import { ADD_RULE, DELETE_RULE, GET_RULES } from "./types";
+import { tokenConfig } from './auth';
 
-export const getTests = () => dispatch => {
+export const getTests = () => (dispatch, getState) => {
     axios
-        .get('/api/test/')
+        .get('/api/test/', tokenConfig(getState))
         .then(res => {
             dispatch({
                 type: GET_RULES,
@@ -15,11 +16,11 @@ export const getTests = () => dispatch => {
 
 };
 
-export const deleteTest = (id) => dispatch => {
+export const deleteTest = (id) => (dispatch, getState) => {
     axios
-        .delete(`/api/test/${id}/`)
+        .delete(`/api/test/${id}/`, tokenConfig(getState))
         .then(res => {
-            dispatch(createMessage({deleteTest: 'Test Deleted'}));
+            dispatch(createMessage({ deleteTest: 'Test Deleted' }));
             dispatch({
                 type: DELETE_RULE,
                 payload: id
@@ -29,11 +30,11 @@ export const deleteTest = (id) => dispatch => {
 
 };
 
-export const addTest = (test) => dispatch => {
+export const addTest = (test) => (dispatch, getState) => {
     axios
-        .post('/api/test/', test)
+        .post('/api/test/', test, tokenConfig(getState))
         .then(res => {
-            dispatch(createMessage({addTest: 'Test Added'}));
+            dispatch(createMessage({ addTest: 'Test Added' }));
             dispatch({
                 type: ADD_RULE,
                 payload: res.data
