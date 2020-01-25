@@ -47,7 +47,7 @@ export class Tests extends Component {
         if (this.state.expandedRows.includes(item.id)) {
             itemRows.push(
                 <tr key={"row-expanded-" + item.id}>
-                    <td colspan="4">{item.result}</td>
+                    <td colspan="4"><pre>{item.result}</pre></td>
                 </tr>
             );
         }
