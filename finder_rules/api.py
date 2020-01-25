@@ -38,13 +38,13 @@ class TestViewSet(viewsets.ModelViewSet):
         return self.request.user.test.all()
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    #     serializer.save(owner=self.request.user)
 
-    def create(self, request):
-        serializer = TestSerializer(data=request.data)
+    # def create(self, request):
+        # serializer = TestSerializer(data=request.data)
 
         if serializer.is_valid():
-            test_id = serializer.save().id
+            test_id = serializer.save(owner=self.request.user).id
 
             call_command(
                 'find_rules',
