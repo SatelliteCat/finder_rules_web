@@ -27,8 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '*',
-    # '192.168.0.113', '127.0.0.1', 
-    ]
+    # '192.168.0.113', '127.0.0.1',
+]
 
 
 # Application definition
@@ -43,7 +43,15 @@ INSTALLED_APPS = [
     'finder_rules',
     'rest_framework',
     'frontend',
+    'knox',
+    'accounts',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',)
+    #     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    #     'PAGE_SIZE': 5
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -85,7 +93,7 @@ DATABASES = {
         'NAME': 'web_site',
         'USER': 'web_site',
         'PASSWORD': '1234',
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'HOST': '127.0.0.1',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
         'OPTIONS': {'charset': 'utf8mb4'},
     }
@@ -129,9 +137,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-#     'PAGE_SIZE': 5
-# }
