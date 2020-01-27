@@ -9,8 +9,9 @@ from finder_rules.serializers import GroupSerializer, RuleSerializer, TestSerial
 
 
 class RuleViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     serializer_class = RuleSerializer
+    # queryset = Rule.objects.all()
 
     def get_queryset(self):
         return self.request.user.rule.all()

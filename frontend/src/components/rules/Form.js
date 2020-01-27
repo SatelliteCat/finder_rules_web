@@ -1,7 +1,8 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {addRule} from "../../actions/rules";
+import { addRule } from "../../actions/rules";
+import { getRules as getGroups }  from '../../actions/groups'
 
 class Form extends Component {
     state = {
@@ -13,25 +14,26 @@ class Form extends Component {
     };
 
     static propTypes = {
-        addRule: PropTypes.func.isRequired
+        addRule: PropTypes.func.isRequired,
+        groups: PropTypes.array.isRequired,
+        getGroups: PropTypes.func.isRequired,
+
     }
 
-    onChange = e => this.setState({[e.target.name]: e.target.value});
+    componentDidMount() {
+        this.props.getGroups();
+    }
+
+    onChange = e => this.setState({ [e.target.name]: e.target.value });
     onSubmit = e => {
         e.preventDefault();
-        const {name, search_text, file_types, group, recommendation} = this.state;
-        const rule = {name, search_text, file_types, group, recommendation};
+        const { name, search_text, file_types, group, recommendation } = this.state;
+        const rule = { name, search_text, file_types, group, recommendation };
         this.props.addRule(rule);
-        // this.setState({
-        //     name: '',
-        //     search_text: '',
-        //     file_types: '',
-        //     group: ''
-        // });
     };
 
     render() {
-        const {name, search_text, file_types, group, recommendation} = this.state;
+        const { name, search_text, file_types, group, recommendation } = this.state;
 
         return (
             <div className="card card-body mt-4 mb-4">
@@ -67,7 +69,7 @@ class Form extends Component {
                             value={file_types}
                         />
                     </div>
-                    <div className="form-group">
+                    {/* <div className="form-group">
                         <label>Group</label>
                         <input
                             className="form-control"
@@ -77,6 +79,17 @@ class Form extends Component {
                             value={group}
                             placeholder='ID'
                         />
+                    </div> */}
+                    <div className='form-group'>
+                        <label>Group</label>
+                        <select>
+                            {/* {this.group.map(rule => (
+                                <option>{rule.group}</option>
+                            ))} */}
+                            {this.props.groups.map(group => (
+                                <option value={group.id}>{group.name}</option>
+                            ))}
+                        </select>
                     </div>
                     <div className="form-group">
                         <label>Recommendation</label>
@@ -99,4 +112,8 @@ class Form extends Component {
     }
 }
 
-export default connect(null, {addRule})(Form);
+const mapStateToProps = state => ({
+    groups: state.rules.rules
+});
+
+export default connect(mapStateToProps, { addRule, getGroups })(Form);
