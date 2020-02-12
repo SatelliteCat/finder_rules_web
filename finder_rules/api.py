@@ -1,6 +1,5 @@
 from django.core.management import call_command
 from rest_framework import permissions, status, viewsets
-from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
 
 from finder_rules.models import Group, Rule, Test
