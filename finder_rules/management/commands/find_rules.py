@@ -143,8 +143,8 @@ class Command(BaseCommand):
             ['javac', '-sourcepath', dir_name, dir_name+'/'+file_name], stdout=subprocess.PIPE)
 
         if(compile_program.returncode):
-            return f'Compile:\n{compile_program.stdout.read()}'
+            return f'Compile:\n{compile_program.stdout.read().decode("utf-8")}'
         else:
             run_program = subprocess.Popen(
-                ['java', dir_name+'/'+(file_name.split('.')[0])], stdout=subprocess.PIPE)
-            return f'Compile:\n{compile_program.stdout.read()}\nRun program:\n{run_program..stdout.read()}'
+                ['java', '-classpath', dir_name, (file_name.split('.')[0])], stdout=subprocess.PIPE)
+            return f'Compile:\n{compile_program.stdout.read().decode("utf-8")}\nRun program:\n{run_program.stdout.read().decode("utf-8") }'
