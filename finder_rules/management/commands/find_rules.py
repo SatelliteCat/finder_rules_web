@@ -1,5 +1,6 @@
 import os
 import os.path
+import subprocess
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
@@ -25,7 +26,7 @@ class Command(BaseCommand):
 
     def find_rules(self, *args):
         # print(args[0])  # group name (group id)
-        # print(args[1])  # path (v1-dir_name; v2-git_link)
+        # print(args[1])  # path (v1-dir_name; v2-git_link; v3-repl_link)
         # args[2]            test id
 
         # cur_dir = os.path.dirname(
@@ -36,12 +37,20 @@ class Command(BaseCommand):
         cur_dir = os.path.dirname(os.getcwd() + '/projects/')
         # print(cur_dir)
 
-        try:
-            Git(cur_dir).clone(args[1])
-        except Exception:
-            pass
-        project_name = args[1].split('/')[-1].split('.')[0]
-        cur_dir += '/' + project_name
+        if('repl.it' in args[1]):
+            project_name = args[1].split('/')[-2]
+            proj_from_repl = self.get_proj_from_repl(cur_dir + '/' + project_name, args[1])
+            cur_dir = proj_from_repl
+
+            if(type(proj_from_repl) is str or proj_from_repl == 3):
+                self.run_program(cur_dir, 'Main.java')
+        else:
+            try:
+                Git(cur_dir).clone(args[1])
+            except Exception:
+                pass
+            project_name = args[1].split('/')[-1].split('.')[0]
+            cur_dir += '/' + project_name
 
         dir_list = [x[0] for x in os.walk(cur_dir)]
         with open(f'{cur_dir}/res{datetime.now().strftime("%Y-%m-%d-%H.%M.%S.%f")}.txt', 'a+') as res_file:
@@ -94,3 +103,43 @@ class Command(BaseCommand):
                 res_file.write(text)
                 test = Test.objects.filter(id__exact=int(args[2]))
                 test.update(result=text)
+
+    def get_proj_from_repl(self, dir_name, url):
+        extract_ex = '.zip'
+        dir_name_proj = url.split('/')[-1]
+
+        dowloading = subprocess.run(
+            ['wget', '-q', '-P', dir_name, url+extract_ex, '-nc'])
+
+        if(dowloading.returncode):
+            # print('Error download')
+            return 1
+        else:
+            unzipping = subprocess.run(
+                ['unzip', '-qo', dir_name+'/'+dir_name_proj+extract_ex, '-d', dir_name+'/'+dir_name_proj])
+
+            if(unzipping.returncode):
+                # print('Error unzip')
+                return 2
+            else:
+                remove_zip = subprocess.run(
+                    ['rm', dir_name+'/'+dir_name_proj+extract_ex])
+
+                if(remove_zip.returncode):
+                    # print('Error remove')
+                    return 3
+                else:
+                    return dir_name+'/'+dir_name_proj
+
+    def test_sys(self):
+        rint('test_sys')
+
+    def run_program(self, dir_name, file_name):
+        compile_program = subprocess.run(['javac', dir_name+'/'+file_name])
+
+        if(compile_program.returncode):
+            return compile_program
+        else:
+            run_program = subprocess.run(['java', dir_name+'/'+file_name])
+            return compile_program + '\n' + run_program
+
