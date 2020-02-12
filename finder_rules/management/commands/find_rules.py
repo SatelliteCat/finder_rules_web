@@ -39,11 +39,12 @@ class Command(BaseCommand):
 
         if('repl.it' in args[1]):
             project_name = args[1].split('/')[-2]
-            proj_from_repl = self.get_proj_from_repl(cur_dir + '/' + project_name, args[1])
+            proj_from_repl = self.get_proj_from_repl(
+                cur_dir + '/' + project_name, args[1])
             cur_dir = proj_from_repl
 
             if(type(proj_from_repl) is str or proj_from_repl == 3):
-                self.run_program(cur_dir, 'Main.java')
+                output_run_prog = self.run_program(cur_dir, 'Main.java')
         else:
             try:
                 Git(cur_dir).clone(args[1])
@@ -100,6 +101,9 @@ class Command(BaseCommand):
                 text += 'Error get rules\n'
 
             finally:
+                if(output_run_prog):
+                    text += output_run_prog
+
                 res_file.write(text)
                 test = Test.objects.filter(id__exact=int(args[2]))
                 test.update(result=text)
@@ -138,8 +142,8 @@ class Command(BaseCommand):
         compile_program = subprocess.run(['javac', dir_name+'/'+file_name])
 
         if(compile_program.returncode):
-            return compile_program
+            return f'Compile:\n{compile_program}'
         else:
-            run_program = subprocess.run(['java', dir_name+'/'+file_name])
-            return compile_program + '\n' + run_program
-
+            run_program = subprocess.run(
+                ['java', dir_name+'/'+(file_name.split('.')[0])])
+            return f'Compile:\n{compile_program}\nRun program:\n{run_program}'
