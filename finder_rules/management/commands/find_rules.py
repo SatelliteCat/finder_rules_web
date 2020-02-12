@@ -139,11 +139,12 @@ class Command(BaseCommand):
         rint('test_sys')
 
     def run_program(self, dir_name, file_name):
-        compile_program = subprocess.run(['javac', dir_name+'/'+file_name])
+        compile_program = subprocess.Popen(
+            ['javac', '-sourcepath', dir_name, dir_name+'/'+file_name], stdout=subprocess.PIPE)
 
         if(compile_program.returncode):
-            return f'Compile:\n{compile_program}'
+            return f'Compile:\n{compile_program.communicate()[0]}'
         else:
-            run_program = subprocess.run(
-                ['java', dir_name+'/'+(file_name.split('.')[0])])
-            return f'Compile:\n{compile_program}\nRun program:\n{run_program}'
+            run_program = subprocess.Popen(
+                ['java', dir_name+'/'+(file_name.split('.')[0])], stdout=subprocess.PIPE)
+            return f'Compile:\n{compile_program.communicate()[0]}\nRun program:\n{run_program.communicate()[0]}'
