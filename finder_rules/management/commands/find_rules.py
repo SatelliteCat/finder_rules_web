@@ -35,16 +35,12 @@ class Command(BaseCommand):
         # cur_dir = 'C:\\Users\\user\\Documents\\projects\\finder_rules\\finder_rules_web\\projects\\' + args[1] + '\\'
         # cur_dir = os.path.dirname(os.getcwd() + '/projects/' + args[1] + '/')
         cur_dir = os.path.dirname(os.getcwd() + '/projects/')
-        # print(cur_dir)
 
         if('repl.it' in args[1]):
             project_name = args[1].split('/')[-2]
             proj_from_repl = self.get_proj_from_repl(
                 cur_dir + '/' + project_name, args[1])
             cur_dir = proj_from_repl
-
-            if(type(proj_from_repl) is str or proj_from_repl == 3):
-                output_run_prog = self.run_program(cur_dir, 'Main.java')
         else:
             try:
                 Git(cur_dir).clone(args[1])
@@ -59,54 +55,16 @@ class Command(BaseCommand):
             text += f'{args[1]} '
             text += f'{str(datetime.now())}\n'
 
-            # global is_rule
-            # is_rule = False
+            text += self.test_sys(dir_list, args[0])
 
-            try:
-                # group_id = Group.objects.get(name__iexact=args[0]).id
-                # rules = Rule.objects.filter(group_id__exact=group_id)
-                rules = Rule.objects.filter(group_id__exact=int(args[0]))
+            text += self.check_style(cur_dir, 'Main.java')
 
-                for rule in rules:
-                    global is_rule
-                    is_rule = False
-                    for dir_path in dir_list:
-                        file_list = os.listdir(dir_path)
-                        for file_name in file_list:
-                            if '.' in file_name:
-                                file_extension = file_name.split('.')[-1]
+            # if(type(proj_from_repl) is str or proj_from_repl == 3):
+            text += self.run_program(cur_dir, 'Main.java')
 
-                                if file_extension and file_extension in rule.file_types:
-                                    with open(f'{dir_path}/{file_name}', 'r') as file:
-                                        try:
-                                            file_text = file.read().lower()
-                                            if rule.search_text and rule.search_text.lower() in file_text:
-                                                is_rule = True
-                                                break
-                                        except Exception:
-                                            print(
-                                                f'Error in {dir_path}/{file_name}')
-                        if is_rule:
-                            break
-                    if is_rule:
-                        text += f'{rule} passed\n'
-                    else:
-                        text += f'{rule} NOT passed'
-                        if rule.recommendation:
-                            text += f' Recommendation: {rule.recommendation}\n'
-                        else:
-                            text += '\n'
-
-            except Exception:
-                text += 'Error get rules\n'
-
-            finally:
-                if(output_run_prog):
-                    text += output_run_prog
-
-                res_file.write(text)
-                test = Test.objects.filter(id__exact=int(args[2]))
-                test.update(result=text)
+            res_file.write(text)
+            test = Test.objects.filter(id__exact=int(args[2]))
+            test.update(result=text)
 
     def get_proj_from_repl(self, dir_name, url):
         extract_ex = '.zip'
@@ -135,8 +93,48 @@ class Command(BaseCommand):
                 else:
                     return dir_name+'/'+dir_name_proj
 
-    def test_sys(self):
-        rint('test_sys')
+    def test_sys(self, dir_list, group_id):
+        text = ''
+
+        try:
+            # group_id = Group.objects.get(name__iexact=args[0]).id
+            # rules = Rule.objects.filter(group_id__exact=group_id)
+            rules = Rule.objects.filter(group_id__exact=int(group_id))
+
+            for rule in rules:
+                global is_rule
+                is_rule = False
+                for dir_path in dir_list:
+                    file_list = os.listdir(dir_path)
+                    for file_name in file_list:
+                        if '.' in file_name:
+                            file_extension = file_name.split('.')[-1]
+
+                            if file_extension and file_extension in rule.file_types:
+                                with open(f'{dir_path}/{file_name}', 'r') as file:
+                                    try:
+                                        file_text = file.read().lower()
+                                        if rule.search_text and rule.search_text.lower() in file_text:
+                                            is_rule = True
+                                            break
+                                    except Exception:
+                                        print(
+                                            f'Error in {dir_path}/{file_name}')
+                    if is_rule:
+                        break
+                if is_rule:
+                    text += f'{rule} passed\n'
+                else:
+                    text += f'{rule} NOT passed'
+                    if rule.recommendation:
+                        text += f' Recommendation: {rule.recommendation}\n'
+                    else:
+                        text += '\n'
+
+        except Exception:
+            text += 'Error get rules\n'
+
+        return text
 
     def run_program(self, dir_name, file_name):
         compile_program = subprocess.Popen(
@@ -147,4 +145,18 @@ class Command(BaseCommand):
         else:
             run_program = subprocess.Popen(
                 ['java', '-classpath', dir_name, (file_name.split('.')[0])], stdout=subprocess.PIPE)
-            return f'Compile:\n{compile_program.stdout.read().decode("utf-8")}\nRun program:\n{run_program.stdout.read().decode("utf-8") }'
+            return f'Compile:\n{compile_program.stdout.read().decode("utf-8")}\nOut program:\n{run_program.stdout.read().decode("utf-8") }'
+
+    def check_style(self, dir_name, file_name):
+        check = subprocess.Popen(
+            [
+                'java',
+                '-jar',
+                './finder_rules/management/commands/checkstyle-8.29-all.jar',
+                '-c',
+                './finder_rules/management/commands/google_checks.xml',
+                dir_name
+            ],
+            stdout=subprocess.PIPE)
+
+        return f'Check style:\n{check.stdout.read().decode("utf-8")}'

@@ -46,13 +46,14 @@ class Form extends Component {
                         />
                     </div>
                     <div className="form-group">
-                        <label>Git repository</label>
+                        <label>URL</label>
                         <input
                             className="form-control"
                             type="text"
                             name="dir_name"
                             onChange={this.onChange}
                             value={dir_name}
+                            placeholder='Git or repl.it'
                         />
                     </div>
                     <div className="form-group">

@@ -71,7 +71,7 @@ export class Tests extends Component {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Git repository</th>
+                            <th>URL</th>
                             <th>Group</th>
                             <th />
                         </tr>
