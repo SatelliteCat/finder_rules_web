@@ -159,4 +159,6 @@ class Command(BaseCommand):
             ],
             stdout=subprocess.PIPE)
 
-        return f'Check style:\n{check.stdout.read().decode("utf-8")}'
+        out_str = check.stdout.read().decode("utf-8").replace(dir_name, '')
+
+        return f'Check style:\n{out_str}'
