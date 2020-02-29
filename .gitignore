@@ -137,3 +137,4 @@ node_modules/
 
 # Dir with temp proj
 projects/
+db/data
