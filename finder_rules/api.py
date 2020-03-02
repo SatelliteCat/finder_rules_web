@@ -1,6 +1,7 @@
 from django.core.management import call_command
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
+from finder_rules.permissions import CustomDjangoModelPermissions
 
 from finder_rules.models import Group, Rule, Test
 
@@ -8,7 +9,7 @@ from finder_rules.serializers import GroupSerializer, RuleSerializer, TestSerial
 
 
 class RuleViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomDjangoModelPermissions]
     serializer_class = RuleSerializer
 
     def get_queryset(self):
@@ -19,7 +20,7 @@ class RuleViewSet(viewsets.ModelViewSet):
 
 
 class GroupViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomDjangoModelPermissions]
     serializer_class = GroupSerializer
 
     def get_queryset(self):
@@ -30,7 +31,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 class TestViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CustomDjangoModelPermissions]
     serializer_class = TestSerializer
 
     def get_queryset(self):

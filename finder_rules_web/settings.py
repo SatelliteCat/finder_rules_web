@@ -93,8 +93,8 @@ DATABASES = {
         'NAME': 'web_site',
         'USER': 'web_site',
         'PASSWORD': '1234',
-        # 'HOST': '127.0.0.1',   # Or an IP Address that your DB is hosted on
-        'HOST': 'database1',
+        'HOST': '127.0.0.1',   # Or an IP Address that your DB is hosted on
+        # 'HOST': 'database1',
         'PORT': '3306',
         'OPTIONS': {'charset': 'utf8mb4'},
     }

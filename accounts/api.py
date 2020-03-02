@@ -1,5 +1,6 @@
 from knox.auth import AuthToken
 from rest_framework import generics, permissions
+from django.contrib.auth.models import Group
 from rest_framework.response import Response
 
 from accounts.serializers import RegisterSerialiser, UserSerializer, LoginSerializer
@@ -12,6 +13,7 @@ class RegisterAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        user.groups.add(Group.objects.get(name='students'))
 
         return Response({
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
